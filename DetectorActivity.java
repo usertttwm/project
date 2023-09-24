@@ -304,3 +304,50 @@
                                 tracker.trackResults(mappedRecognitions, currTimestamp);
     
     
+                                 trackingOverlay.postInvalidate();
+    
+                                computingDetection = false;
+    
+                                runOnUiThread(
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                showFrameInfo(previewWidth + "x" + previewHeight);
+                                                showCropInfo(cropCopyBitmap.getWidth() + "x" + cropCopyBitmap.getHeight());
+                                                showInference(lastProcessingTimeMs + "ms");
+                                            }
+                                        });
+                            }
+                        }
+                    });
+    
+    
+        }
+    
+    
+        @Override
+        protected int getLayoutId() {
+            return R.layout.tfe_od_camera_connection_fragment_tracking;
+        }
+    
+        @Override
+        protected Size getDesiredPreviewFrameSize() {
+            return DESIRED_PREVIEW_SIZE;
+        }
+    
+        // Which detection model to use: by default uses Tensorflow Object Detection API frozen
+        // checkpoints.
+        private enum DetectorMode {
+            TF_OD_API;
+        }
+    
+        @Override
+        protected void setUseNNAPI(final boolean isChecked) {
+            runInBackground(() -> detector.setUseNNAPI(isChecked));
+        }
+    
+        @Override
+        protected void setNumThreads(final int numThreads) {
+            runInBackground(() -> detector.setNumThreads(numThreads));
+        }
+    }
